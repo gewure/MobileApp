@@ -3,7 +3,7 @@ package com.example.f00.mobileapp;
 import android.app.IntentService;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.os.AsyncTask;
+
 import android.preference.PreferenceManager;
 import android.support.v4.content.LocalBroadcastManager;
 import android.util.Log;
@@ -11,22 +11,23 @@ import android.util.Log;
 import com.google.android.gms.gcm.GcmPubSub;
 import com.google.android.gms.gcm.GoogleCloudMessaging;
 import com.google.android.gms.iid.InstanceID;
+import com.loopj.android.http.AsyncHttpClient;
+import com.loopj.android.http.JsonHttpResponseHandler;
+import com.loopj.android.http.RequestParams;
 
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.io.Reader;
-import java.io.UnsupportedEncodingException;
-import java.net.HttpURLConnection;
-import java.net.URL;
+
+import cz.msebera.android.httpclient.Header;
 
 public class RegistrationIntentService extends IntentService {
 
     private static final String TAG = "RegIntentService";
     private static final String[] TOPICS = {"global"};
+
+    private String cgmToken = "";
 
     public RegistrationIntentService() {
         super(TAG);
@@ -40,14 +41,7 @@ public class RegistrationIntentService extends IntentService {
         if(!loginManager.isLogged(this)) {
             Intent loginIntent = new Intent(this, LoginActivity.class);
             startService(loginIntent);
-        }
-        try {
-            // [START register_for_gcm]
-            // Initially this call goes out to the network to retrieve the token, subsequent calls
-            // are local.
-            // R.string.gcm_defaultSenderId (the Sender ID) is typically derived from google-services.json.
-            // See https://developers.google.com/cloud-messaging/android/start for details on this file.
-            // [START get_token]
+        } try {
 
             InstanceID instanceID = InstanceID.getInstance(this);
 
@@ -58,8 +52,10 @@ public class RegistrationIntentService extends IntentService {
 
             loginManager.setRegToken(this, token);
 
+            String userid = loginManager.getIdToken(this);
+
             // TODO: Implement this method to send any registration to your app's servers.
-            sendRegistrationToServer(token);
+            sendRegistrationToServer(userid, token);
 
             // Subscribe to topic channels
             subscribeTopics(token);
@@ -88,10 +84,37 @@ public class RegistrationIntentService extends IntentService {
      *
      * @param token The new token.
      */
-    private void sendRegistrationToServer(String token) {
+    private void sendRegistrationToServer(String userid, String token) {
         // Add custom implementation, as needed.
 
         // TO-DO: send both user id token and CGM token to server.
+        AsyncHttpClient client = new AsyncHttpClient();
+        RequestParams params = new RequestParams();
+
+        params.put("userid", userid);
+        params.put("token", token);
+
+        cgmToken = token;
+
+        client.post("https://omega.aizio.net:1234/api/registerToken/", params, new JsonHttpResponseHandler() {
+            @Override
+            public void onSuccess(int statusCode, Header[] headers, JSONObject resp) {
+                // Pull out the first event on the public timeline
+
+                try {
+                    JSONObject response = resp.getJSONObject("response");    // this will return correct
+                    String status = response.getString("status");
+
+                    if (status.equals("success")) {
+
+
+                    }
+
+                } catch (JSONException e) {
+
+                }
+            }
+        });
     }
 
     /**

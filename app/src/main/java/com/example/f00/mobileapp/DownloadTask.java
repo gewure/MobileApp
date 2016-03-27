@@ -1,4 +1,4 @@
-package com.example.f00.mobileapp;
+/*package com.example.f00.mobileapp;
 
 import android.os.AsyncTask;
 import android.util.Log;
@@ -11,9 +11,7 @@ import java.io.UnsupportedEncodingException;
 import java.net.HttpURLConnection;
 import java.net.URL;
 
-/**
- * Created by mcavero on 3/27/16.
- */
+
 public class DownloadTask extends AsyncTask<String, Void, String> {
 
     public AsyncResponse delegate = null;
@@ -47,8 +45,8 @@ public class DownloadTask extends AsyncTask<String, Void, String> {
         try {
             URL url = new URL(myurl);
             HttpURLConnection conn = (HttpURLConnection) url.openConnection();
-            conn.setReadTimeout(10000 /* milliseconds */);
-            conn.setConnectTimeout(15000 /* milliseconds */);
+            conn.setReadTimeout(10000);
+            conn.setConnectTimeout(15000);
             conn.setRequestMethod("GET");
             conn.setDoInput(true);
             conn.connect();
@@ -76,3 +74,4 @@ public class DownloadTask extends AsyncTask<String, Void, String> {
 }
 
 
+*/

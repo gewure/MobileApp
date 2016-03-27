@@ -2,6 +2,7 @@ package com.example.f00.mobileapp;
 
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -22,8 +23,13 @@ import com.google.android.gms.common.api.OptionalPendingResult;
 import com.google.android.gms.common.api.ResultCallback;
 import com.google.android.gms.common.api.Status;
 
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
+
+import com.loopj.android.http.*;
+import com.loopj.android.http.AsyncHttpClient;
+import com.loopj.android.http.AsyncHttpResponseHandler;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -32,6 +38,13 @@ import java.io.Reader;
 import java.io.UnsupportedEncodingException;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.util.ArrayList;
+import java.util.List;
+
+import cz.msebera.android.httpclient.Header;
+import cz.msebera.android.httpclient.NameValuePair;
+import cz.msebera.android.httpclient.message.BasicHeader;
+import cz.msebera.android.httpclient.message.BasicNameValuePair;
 
 public class LoginActivity extends AppCompatActivity implements GoogleApiClient.OnConnectionFailedListener, View.OnClickListener {
 
@@ -88,6 +101,8 @@ public class LoginActivity extends AppCompatActivity implements GoogleApiClient.
         super.onStart();
 
         final Context ctx = this.getApplicationContext();
+
+        ctx.getSharedPreferences("YOUR_PREFS", 0).edit().clear().commit();
 
         OptionalPendingResult<GoogleSignInResult> opr = Auth.GoogleSignInApi.silentSignIn(mGoogleApiClient);
         if (opr.isDone()) {
@@ -203,7 +218,40 @@ public class LoginActivity extends AppCompatActivity implements GoogleApiClient.
 
     private void checkToken(final String userIdToken) {
 
-        DownloadTask asyncTask = new DownloadTask(new AsyncResponse() {
+        AsyncHttpClient client = new AsyncHttpClient();
+        RequestParams params = new RequestParams();
+        params.put("token", userIdToken);
+        client.post("https://omega.aizio.net:1234/api/checkToken/", params, new JsonHttpResponseHandler() {
+            @Override
+            public void onSuccess(int statusCode, Header[] headers, JSONObject resp) {
+                // Pull out the first event on the public timeline
+
+                try {
+                    JSONObject response = resp.getJSONObject("response");    // this will return correct
+                    String status = response.getString("status");
+
+                    if (status.equals("success")) {
+
+                        Log.d("STATUS", status);
+
+                        LoginManager loginManager = new LoginManager();
+                        loginManager.setState(LoginActivity.this, true);
+                        loginManager.setName(LoginActivity.this, userName);
+                        loginManager.setEmail(LoginActivity.this, userEmail);
+                        loginManager.setIdToken(LoginActivity.this, userIdToken);
+                        // TO-DO: Google Cloud Messaging.
+                        Intent intent = new Intent(LoginActivity.this, MainActivity.class);
+                        startActivity(intent);
+
+                    }
+
+                } catch (JSONException e) {
+
+                }
+            }
+        });
+
+        /*DownloadTask asyncTask = new DownloadTask(new AsyncResponse() {
 
             @Override
             public void processFinish(Object output) {
@@ -234,6 +282,6 @@ public class LoginActivity extends AppCompatActivity implements GoogleApiClient.
             }
         });
 
-        asyncTask.execute("https://omega.aizio.net:1234/api/checkToken/" + userIdToken);
+        asyncTask.execute("https://omega.aizio.net:1234/api/checkToken/" + userIdToken);*/
     }
 }
