@@ -1,0 +1,56 @@
+{
+  "project_info": {
+    "project_id": "mobileapp-6eeef",
+    "project_number": "317096533096",
+    "name": "MobileApp"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:317096533096:android:17587cb0e34bab16",
+        "client_id": "android:com.example.f00.mobileapp",
+        "client_type": 1,
+        "android_client_info": {
+          "package_name": "com.example.f00.mobileapp",
+          "certificate_hash": []
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "317096533096-8kmoa0toikr9p037h5sj2j7mcva0pjct.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.f00.mobileapp",
+            "certificate_hash": "F2DD69BF255F45ED4CC696BEAD5FA21A50804A63"
+          }
+        },
+        {
+          "client_id": "317096533096-0qcg2rq503thto8qh8o70g2d8kjk5qik.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "cloud_messaging_service": {
+          "status": 1,
+          "apns_config": []
+        },
+        "appinvite_service": {
+          "status": 1,
+          "other_platform_oauth_client": []
+        },
+        "google_signin_service": {
+          "status": 2
+        },
+        "ads_service": {
+          "status": 1
+        }
+      }
+    }
+  ],
+  "client_info": [],
+  "ARTIFACT_VERSION": "1"
+}
